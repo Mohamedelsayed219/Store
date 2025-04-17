@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Services.Abstractions;
+using Shared;
 
 namespace Presentation
 {
@@ -17,9 +18,9 @@ namespace Presentation
         // EndPoint: Public  Non-Static Method
 
         [HttpGet] // GET: / api/products
-        public async Task<IActionResult> GetAllProducts() 
+        public async Task<IActionResult> GetAllProducts([FromQuery]ProductSpecificationsParamters specParams) 
         {
-            var result = await serviceManager.ProductService.GetAllProductsAsync();
+            var result = await serviceManager.ProductService.GetAllProductsAsync(specParams);
             if (result is null) return BadRequest();
             
             return Ok(result);
