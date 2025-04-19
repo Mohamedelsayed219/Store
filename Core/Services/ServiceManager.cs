@@ -9,8 +9,14 @@ using Services.Abstractions;
 
 namespace Services
 {
-    public class ServiceManager(IUnitofwork unitofwork, IMapper mapper) : IServiceManager
+    public class ServiceManager(
+        IUnitofwork unitofwork,
+        IMapper mapper,
+        IBasketRepository basketRepository
+        ) : IServiceManager
     {
         public IProductService ProductService { get; } = new ProductService(unitofwork, mapper);
+
+        public IBasketService BasketService { get; } = new BasketService(basketRepository, mapper);
     }
 }
