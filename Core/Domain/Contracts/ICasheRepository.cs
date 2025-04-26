@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Domain.Contracts
 {
-    public interface IDbInitializer
+    public interface ICasheRepository
     {
+        Task SetAsync(string Key, object value, TimeSpan duration);
 
-        Task InitializeAsync();
-        Task InitializeIdentityAsync();
+        Task<string?> GetAsync(string Key);
 
     }
 }
