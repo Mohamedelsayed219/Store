@@ -5,6 +5,9 @@ using Services;
 using Presistence;
 using Domain.Contracts;
 using Store.G02.Api.Middlewares;
+using Domain.Models.Identity;
+using Microsoft.AspNetCore.Identity;
+using Presistence.Identity;
 
 namespace Store.G02.Api.Extensions
 {
@@ -17,12 +20,15 @@ namespace Store.G02.Api.Extensions
 
             services.AddBuiltServices();
             services.AddSwaggerServices();
+            services.ConfigureServices();
             
 
             services.AddInfrastructureServices(configuration);
+
+            services.AddIdentityServices();
+
             services.AddApplicationServices();
 
-            services.ConfigureServices();
 
 
             return services;
@@ -37,6 +43,19 @@ namespace Store.G02.Api.Extensions
 
             return services;
         }
+
+
+        private static IServiceCollection AddIdentityServices(this IServiceCollection services)
+        {
+
+
+            services.AddIdentity<AppUser, IdentityRole>()
+                .AddEntityFrameworkStores<StoreIdentityDbContext>();
+
+
+            return services;
+        }
+
 
         private static IServiceCollection AddSwaggerServices(this IServiceCollection services)
         {
@@ -122,6 +141,7 @@ namespace Store.G02.Api.Extensions
             using var scope = app.Services.CreateScope();
             var dbInitializer = scope.ServiceProvider.GetRequiredService<IDbInitializer>(); // ASK CLR Create Object From DbInitializer
             await dbInitializer.InitializeAsync();
+            await dbInitializer.InitializeIdentityAsync();
 
 
             return app;
