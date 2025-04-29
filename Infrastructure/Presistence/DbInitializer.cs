@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Domain.Contracts;
 using Domain.Models;
 using Domain.Models.Identity;
+using Domain.Models.OrderModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Presistence.Data;
@@ -35,8 +36,10 @@ namespace Presistence
 
         public async Task InitializeAsync()
         {
-            
-            
+
+
+            try
+            {
                 // Craete Database If It dosen't Exists && Apply To Any Pending Migrations
                 if (_context.Database.GetPendingMigrations().Any())
                 {
@@ -121,7 +124,34 @@ namespace Presistence
 
                 }
 
-            
+                if (!_context.DeliveryMethods.Any())
+                {
+
+                    // 1. Read All Data From delivery Json File as String
+
+                    var deliveryData = await File.ReadAllTextAsync(@"..\Infrastructure\Presistence\Data\Seeding\delivery.json");
+
+
+                    // 2. Transform String To C# Object [List<DeliveryMethod>]
+                    var deliveryMethods = JsonSerializer.Deserialize<List<DeliveryMethod>>(deliveryData);
+
+
+                    // 3. Add List<DeliveryMethod> To Database
+
+                    if (deliveryMethods is not null && deliveryMethods.Any())
+                    {
+                        await _context.DeliveryMethods.AddRangeAsync(deliveryMethods);
+                        await _context.SaveChangesAsync();
+                    }
+
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
             
 
         }
